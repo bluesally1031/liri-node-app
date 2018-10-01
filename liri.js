@@ -1,12 +1,14 @@
-//Code to read and set any environment vars with dotenv package
+////////////////////////////
+//
+// NPM Stuff
+//
+////////////////////////////
+
 require("dotenv").config();
-
 var keys = require("./keys.js");
-
 var request = require("request");
 var fs = require("fs");
 var Spotify = require("node-spotify-api");
-//----------------------------------------------------
 
 /////////////////////////////
 //
@@ -45,57 +47,49 @@ var searchSong = function (song) {
         console.log("\nArtist: " + songData.artists[0].name + "\nTitle: " + songData.name + "\nPreview Link: " + songData.preview_url + "\nAblum: " + songData.album.name + "\n")
     });
 };
+
 ////////////////////////
 //
 //  OMDB 'movie-this'
 //
 ////////////////////////
-
-var searchMovie = function() {
-    this.findMovie = function(film) {
+var searchMovie = function () {
+    this.findMovie = function (film) {
         var URL = "http://www.omdbapi.com/?t=" + film + "&apikey=trilogy"
 
-        request(URL, function(error, response, body){
+        request(URL, function (error, response, body) {
             var movieData = JSON.parse(body);
 
             console.log("\nTitle: " + movieData.Title + "\nYear: " + movieData.Year + "\nRated: " + movieData.Rated + "\nIMDB Rating: " + movieData.imdbRating + "\nRotten Tomatoes Rating: " + JSON.stringify(movieData.Ratings[1]) + "\nCountry of Product: " + movieData.Country + "\nPlot Summary: " + movieData.Plot + "\nActors: " + movieData.Actors + "\n")
-        })
+        });
     }
-}
-///////////////////////
-//
-// DO WHAT I SAY!
-//
-///////////////////////
-fs.readFile("random.txt", "utf8", function(error, data){
-    if (error) {
-        return console.log(error);
-    }
-    console.log(data);
-});
+};
 
 ////////////////////////
 //
 // router / cli
 //
 ////////////////////////
-
 var command = process.argv[2];
 // Command for BANDS IN TOWN
 if (command === "concert-this") {
     var concert = new searchBand();
-    concert.findBand(process.argv.slice(3).join(" "))
-}
-// Command for SPOTIFY
-if (command === "spotify-this") {
-    var song = process.argv.slice(3).join(" ")
-    searchSong(song);
+    concert.findBand(process.argv.slice(3).join(" "));
 }
 // Command for OMDB
 if (command === "movie-this") {
     var newfilm = new searchMovie();
-    newfilm.findMovie(process.argv.slice(3).join(" "))
+    newfilm.findMovie(process.argv.slice(3).join(" "));
 }
-
-
+// Command for SPOTIFY
+////////UUUUUUGGGGGGGHHHHHHHHH!!!!!!!!!!!!
+var spotifySongsSearch = function () {
+    if (command === "spotify-this") {
+        var song = process.argv.slice(3).join(" ");
+    }
+    else if (command === "do-this"){
+        song = process.argv.slice(1).join("");
+    }
+    searchSong(song);
+}
 
