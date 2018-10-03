@@ -10,20 +10,49 @@ var request = require("request");
 var fs = require("fs");
 var Spotify = require("node-spotify-api");
 
+
+////////////////////////
+//
+// router / cli
+//
+////////////////////////
+var command = process.argv[2],
+    option = process.argv[3];
+
+switch (command) {
+    case "concert-this":
+        searchBand(option);
+        break;
+
+    case "movie-this":
+        searchMovie(option);
+        break;
+
+    case "spotify-this":
+        searchSong(option);
+        break;
+
+    case "do-this":
+        useFile();
+        break;
+
+    default:
+        console.log("you didn't enter any arguments!!");
+        break;
+}
+
 /////////////////////////////
 //
 //BANDS IN TOWN `concert-this`
 //
 ///////////////////////////
-var searchBand = function () {
-    this.findBand = function (artist) {
-        var URL = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp"
-        request(URL, function (err, response, body) {
-            var concertData = JSON.parse(body)[0];
-            console.log("\nVenue Name: " + concertData.venue.name +
-                "\nLocation: " + concertData.venue.city, concertData.venue.region + "\nConcert Date: " + concertData.datetime + "\n");
-        });
-    };
+function searchBand(artist) {
+    var URL = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp"
+    request(URL, function (err, response, body) {
+        var concertData = JSON.parse(body)[0];
+        console.log("\nVenue Name: " + concertData.venue.name +
+            "\nLocation: " + concertData.venue.city, concertData.venue.region + "\nConcert Date: " + concertData.datetime + "\n");
+    });
 };
 
 //////////////
@@ -31,7 +60,7 @@ var searchBand = function () {
 // SPOTIFY 'spotify-this'
 //
 /////////////
-var searchSong = function (song) {
+function searchSong(song) {
     var spotify = new Spotify({
         id: "302fbbf27a24468ca9e4d93d3b45f60f",
         secret: "ae5ce7d04df8415390cf37e41b566837"
@@ -53,43 +82,43 @@ var searchSong = function (song) {
 //  OMDB 'movie-this'
 //
 ////////////////////////
-var searchMovie = function () {
-    this.findMovie = function (film) {
-        var URL = "http://www.omdbapi.com/?t=" + film + "&apikey=trilogy"
+function searchMovie(film) {
+    var URL = "http://www.omdbapi.com/?t=" + film + "&apikey=trilogy"
 
-        request(URL, function (error, response, body) {
-            var movieData = JSON.parse(body);
+    request(URL, function (error, response, body) {
+        var movieData = JSON.parse(body);
 
-            console.log("\nTitle: " + movieData.Title + "\nYear: " + movieData.Year + "\nRated: " + movieData.Rated + "\nIMDB Rating: " + movieData.imdbRating + "\nRotten Tomatoes Rating: " + JSON.stringify(movieData.Ratings[1]) + "\nCountry of Product: " + movieData.Country + "\nPlot Summary: " + movieData.Plot + "\nActors: " + movieData.Actors + "\n")
-        });
-    }
-};
-
-////////////////////////
-//
-// router / cli
-//
-////////////////////////
-var command = process.argv[2];
-// Command for BANDS IN TOWN
-if (command === "concert-this") {
-    var concert = new searchBand();
-    concert.findBand(process.argv.slice(3).join(" "));
+        console.log("\nTitle: " + movieData.Title + "\nYear: " + movieData.Year + "\nRated: " + movieData.Rated + "\nIMDB Rating: " + movieData.imdbRating + "\nRotten Tomatoes Rating: " + JSON.stringify(movieData.Ratings[1]) + "\nCountry of Product: " + movieData.Country + "\nPlot Summary: " + movieData.Plot + "\nActors: " + movieData.Actors + "\n")
+    });
 }
-// Command for OMDB
-if (command === "movie-this") {
-    var newfilm = new searchMovie();
-    newfilm.findMovie(process.argv.slice(3).join(" "));
-}
-// Command for SPOTIFY
-////////UUUUUUGGGGGGGHHHHHHHHH!!!!!!!!!!!!
-var spotifySongsSearch = function () {
-    if (command === "spotify-this") {
-        var song = process.argv.slice(3).join(" ");
-    }
-    else if (command === "do-this"){
-        song = process.argv.slice(1).join("");
-    }
-    searchSong(song);
+
+
+
+
+function useFile() {
+    fs.readFile("./random.txt", "utf8", function (error, data) {
+
+        if (error) {
+            return console.log(error);
+        }
+        var dataArr = data.split(","),
+            fsCommand = dataArr[0],
+            fsOption = dataArr[1];
+
+        switch (fsCommand) {
+            case "concert-this":
+                searchBand(fsOption);
+                break;
+
+            case "movie-this":
+                searchMovie(fsOption);
+                break;
+
+            case "spotify-this":
+                searchSong(fsOption);
+                break;
+        }
+
+    })
 }
 
